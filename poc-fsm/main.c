@@ -10,11 +10,9 @@
 
 #include "fsm.h"
 
-/*
- * 
- */
 int main(int argc, char** argv) {
-
+    
+    static theState currentState = IDLE_STATE;
     
     printf("Event: %d\n", EVENT_1);
     printf("State: %d\n", STATE_1);
