@@ -11,22 +11,28 @@
 #include "fsm.h"
 
 int main(int argc, char** argv) {
-    
+
     static theState currentState = IDLE_STATE;
-        
-//    printf("Event: %d\n", EVENT_1);
-//    printf("State: %d\n", STATE_1);
-    
+
     if (actionS1_E1() == STATE_2)
     {
         actionS2_E1();
     }
-    else 
+    else
     {
         actionS1_E2();
     }
-    
-    
+
+    switch (actionS1_E1())
+    {
+        case STATE_2:
+            actionS2_E1();
+            break;
+        default:
+            printf("default\n");
+            break;
+    }
+
     return (EXIT_SUCCESS);
 }
 
