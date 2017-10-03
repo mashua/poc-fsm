@@ -12,16 +12,26 @@ theState (*state_table[MAX_STATES][MAX_EVENTS])(void) = {
 
 theState actionS1_E1(void){
     
+    char *action = "S1";
+    char *event = "E1";
+    printf("IN ACTION: %s, AND EVENT: %s\n", action, event);
     
+    return STATE_2;
 }
 
 theState actionS1_E2(void){
   
+    char *action = "S2";
+    char *event = "E2";
+    printf("IN ACTION: %s, AND EVENT: %s\n", action, event);
     
 }
 
 theState actionS2_E1(void){
     
+    char *action = "S2";
+    char *event = "E1";
+    printf("IN ACTION: %s, AND EVENT: %s\n", action, event);
 }
 
 theState actionS2_E2(void){
