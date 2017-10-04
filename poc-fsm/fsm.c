@@ -188,6 +188,8 @@ theState triggerS4(void){
     char *action = "S3";
     char *event = "E1";
     printf("IN ACTION: %s, AND EVENT: %s\n", action, event);
+    
+    return NO_STATE;
 }
 
 //theState actionS4_E2(void){

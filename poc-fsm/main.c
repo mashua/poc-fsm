@@ -20,14 +20,13 @@ int main(int argc, char** argv) {
     }
     else
     {
-//        actionS1_E2();
+        
     }
 
     triggerS1();
     
     while(1)
     {
-        
         /**/
         switch (triggerS1())
         {
@@ -38,7 +37,6 @@ int main(int argc, char** argv) {
                 printf("Erroneus state\n");
                 break;
         }
-        
     }
     
     return (EXIT_SUCCESS);
