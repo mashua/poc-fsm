@@ -13,7 +13,8 @@
 int main(int argc, char** argv) {
 
     static theState currentState = IDLE_STATE;
-
+//    extern theState (*state_table[MAX_STATES][MAX_EVENTS])(void);
+    
     if (actionS1_E1() == STATE_2)
     {
         actionS2_E1();
@@ -23,16 +24,24 @@ int main(int argc, char** argv) {
         actionS1_E2();
     }
 
-    switch (actionS1_E1())
+    
+    while(1)
     {
-        case STATE_2:
-            actionS2_E1();
-            break;
-        default:
-            printf("default\n");
-            break;
+        
+        /**/
+//        from_to(  );
+        switch (actionS1_E1())
+        {
+            case STATE_2:
+                actionS2_E1();
+                break;
+            default:
+                printf("Erroneus state\n");
+                break;
+        }
+        
     }
-
+    
     return (EXIT_SUCCESS);
 }
 
