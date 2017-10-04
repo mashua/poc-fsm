@@ -12,28 +12,27 @@
 
 int main(int argc, char** argv) {
 
-    static theState currentState = IDLE_STATE;
-//    extern theState (*state_table[MAX_STATES][MAX_EVENTS])(void);
+    static theState currentState = NO_STATE;
     
-    if (actionS1_E1() == STATE_2)
+    if (triggerS1() == STATE_2)
     {
-        actionS2_E1();
+        triggerS2();
     }
     else
     {
-        actionS1_E2();
+//        actionS1_E2();
     }
 
+    triggerS1();
     
     while(1)
     {
         
         /**/
-//        from_to(  );
-        switch (actionS1_E1())
+        switch (triggerS1())
         {
             case STATE_2:
-                actionS2_E1();
+                triggerS2();
                 break;
             default:
                 printf("Erroneus state\n");
