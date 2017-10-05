@@ -19,13 +19,15 @@
 /* The state / event lookup table, this is a table
  * that holds references to functions with no args
  * which returns theState types*/
-theState (*state_table[MAX_STATES][MAX_EVENTS])(void) = {
-                    /*events that can occur in the specific state*/
-/*zeropadevents*/   { triggerVoid },
-/*state1 events*/   { triggerS1 },
-/*state2 events*/   { triggerS1 },
-/*state3 events*/   { triggerS2 },
-/*state4 events*/   { triggerS3 }
+theState ( * const state_table[MAX_STATES+1][MAX_STATES+1])(void) =
+{
+                /*zeropad col*/ /*state no*/
+                       /*0*/    /*1*/       /*2*/       /*3*/        /*4*/
+/*zeropad row*/     {  no_tran, no_tran,    no_tran,    no_tran,    no_tran    },
+/*state no: 1*/     {  no_tran, no_tran,    trigger_S1, trigger_S1, trigger_S1 },
+/*state no: 2*/     {  no_tran, no_tran,    no_tran,    trigger_S2, trigger_S2 },
+/*state no: 3*/     {  no_tran, trigger_S3, no_tran,    no_tran,    trigger_S3 },
+/*state no: 4*/     {  no_tran, no_tran,    no_tran,    no_tran,    no_tran    }
 };
 
 /* This table contains the validity between the states.
@@ -41,7 +43,12 @@ uint8_t stateValidity[][4] = {
 /*state no: 3*/    {0,         0,        1 }    /*go from state 3 to state 2*/
 };
 
-theState triggerS1(void){
+theState no_tran(void){
+    
+    return NO_STATE;
+}
+
+theState trigger_S1(void){
     
     char *action = "S1";
     char *event = "E1";
@@ -52,7 +59,7 @@ theState triggerS1(void){
      */
     uint8_t go_to_state = 4;
     srand(50);
-    go_to_state = rand() % ( MAX_STATES + 1 - 1);
+    go_to_state = rand() % (MAX_STATES);
     
     switch(go_to_state)
     {
@@ -99,7 +106,7 @@ theState triggerS1(void){
 //    
 //}
 
-theState triggerS2(void){
+theState trigger_S2(void){
     
     char *action = "S2";
     char *event = "E1";
@@ -141,7 +148,7 @@ theState triggerS2(void){
 //    printf("IN ACTION: %s, AND EVENT: %s\n", action, event);
 //}
 
-theState triggerS3(void){
+theState trigger_S3(void){
     
     char *action = "S3";
     char *event = "E1";
@@ -183,7 +190,7 @@ theState triggerS3(void){
 //    printf("IN ACTION: %s, AND EVENT: %s\n", action, event);
 //}
 
-theState triggerS4(void){
+theState trigger_S4(void){
     
     char *action = "S3";
     char *event = "E1";
@@ -213,7 +220,7 @@ theState triggerS4(void){
 //    printf("IN ACTION: %s, AND EVENT: %s\n", action, event);
 //}
 
-theState triggerVoid(void){
+theState go_to_void(void){
     
     char *action = "VOID";
     char *event = "NOEVENT";
