@@ -14,26 +14,13 @@ int main(int argc, char** argv) {
 
     static theState currentState = NO_STATE;
     
-    extern theState (*state_table)(void);
+    extern theState ( * const state_table[MAX_STATES+1][MAX_STATES+1])(void);
         
     printf("%d\n", MAX_STATES);
     
     theState test;
-    
-//    test = ((*state_table+3)+1)();
         
-//    (*state_table[1][1])();
-    
-    if (trigger_S1() == STATE_2)
-    {
-        trigger_S2();
-    }
-    else
-    {
-        
-    }
-
-    trigger_S1();
+    test = (*state_table[1][2])();
     
     while(1)
     {

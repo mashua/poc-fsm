@@ -16,31 +16,35 @@
 ///*state4 events*/   { triggerS3, actionS3_E2, actionS3_E3, actionS3_E4, triggerVoid }
 //};
 
-/* The state / event lookup table, this is a table
+/* The state transition lookup table, this is a table
  * that holds references to functions with no args
- * which returns theState types*/
+ * which returns theState types.
+ * Usage in the form of (*state_table[2][1])(); means trigger the 2 state
+ * that 'should' land on state 1.
+ */
 theState ( * const state_table[MAX_STATES+1][MAX_STATES+1])(void) =
 {
-                /*zeropad col*/ /*state no*/
-                       /*0*/    /*1*/       /*2*/       /*3*/        /*4*/
-/*zeropad row*/     {  no_tran, no_tran,    no_tran,    no_tran,    no_tran    },
-/*state no: 1*/     {  no_tran, no_tran,    trigger_S1, trigger_S1, trigger_S1 },
-/*state no: 2*/     {  no_tran, no_tran,    no_tran,    trigger_S2, trigger_S2 },
-/*state no: 3*/     {  no_tran, trigger_S3, no_tran,    no_tran,    trigger_S3 },
-/*state no: 4*/     {  no_tran, no_tran,    no_tran,    no_tran,    no_tran    }
+                /*zeropad col*/ /*TO state no*/
+                            /*0*/    /*1*/       /*2*/       /*3*/        /*4*/
+/*zeropad row*/         {  no_tran, no_tran,    no_tran,    no_tran,    no_tran    },
+/*FROM state no: 1*/    {  no_tran, no_tran,    trigger_S1, trigger_S1, trigger_S1 },
+/*FROM state no: 2*/    {  no_tran, no_tran,    no_tran,    trigger_S2, trigger_S2 },
+/*FROM state no: 3*/    {  no_tran, trigger_S3, no_tran,    no_tran,    trigger_S3 },
+/*FROM state no: 4*/    {  no_tran, no_tran,    no_tran,    no_tran,    no_tran    }
 };
 
 /* This table contains the validity between the states.
  * if( stateValidity[from_state_no][to_state_no] == 0 ) then
  * its not a valid state transition.
  */
-uint8_t stateValidity[][4] = {
+uint8_t stateValidity[MAX_STATES+1][MAX_STATES+1] = {
                 /*zeropad*/    /*state no*/
-                  /*0*/      /*1*/     /*2*/
-/*zeropad*/        {0,         0,        0 },
-/*state no: 1*/    {0,         0,        1 },   /*go from state 1 to state 2*/
-/*state no: 2*/    {0,         0,        0 },
-/*state no: 3*/    {0,         0,        1 }    /*go from state 3 to state 2*/
+                  /*0*/    /*1*/    /*2*/    /*3*/    /*4*/
+/*zeropad*/        {0,       0,       0,       0,       0 },
+/*state no: 1*/    {0,       0,       1,       1,       1 },   /*go from state 1 to state 2*/
+/*state no: 2*/    {0,       0,       0,       1,       1 },
+/*state no: 3*/    {0,       1,       0,       0,       1 },    /*go from state 3 to state 2*/
+/*state no: 4*/    {0,       0,       0,       0,       0 }    
 };
 
 theState no_tran(void){
