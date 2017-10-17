@@ -55,7 +55,7 @@ SECTION3
  
  header_file+= <<SECTION4
 
- /* Function prototypes for triggering states */
+/* Function prototypes for triggering states */
 
 SECTION4
 
@@ -66,6 +66,60 @@ SECTION4
  header_file+="#endif /*FSM_H*/"; 
  header_file;
 end
+
+#The heredoc template for the implementation (.c) file code gen.
+def return_implementation_file_template(states_array, states_hash)
+
+ states="";
+ functions="";
+ implementation_file= <<SECTION1
+#include <stdint.h>
+#include <stdlib.h>
+#include <stdio.h>
+
+#include "fsm.h"
+SECTION1
+ 
+ implementation_file+= <<SECTION2
+/* This table holds references to functions that triggers the states.
+ * The zero indexed function is 'no_tran' and is used to have one to one
+ * mapping between the trigger functions and the array indexes.
+ */
+theState (* const state_trigger[MAX_STATES+1])(void) = {
+         no_tran,
+SECTION2
+ 
+ #build the function pointers for the upper array
+ states_array.each_index { |elem_index|
+   states+=" "+states_array[elem_index].to_s;
+   #don't put an extra ',' on the last array element
+   unless elem_index == states_array.length()-1
+     states+=",";
+   end                                            
+ }
+ implementation_file+=states+="\n};";
+ 
+ #build trigger_<> function bodies
+ states_hash.each{ |key, array_val |
+   functions+= "\ntheState trigger_#{key}(void){\n\n";
+   functions+="\tchar *current_state = \"#{key}\";\n";
+   functions+="\tprintf(\"ACTION: %s, TRIGGERED\\n\", current_state);"; #escape the \n
+   functions+="\n\tuint8_t go_to_state = #{array_val.last}\n";
+   functions+="\n\t/*here you can do whatever you must to go to the next possible\n\t *we simply go random to one of the possible next states\n\t */\n";
+   functions+="\n\t/*go_to_state = */";
+   functions+="\n\tswitch(go_to_state)";
+   functions+="\n\t{";
+   functions+="\n\t\tcase :";
+   
+   functions+="\n\t\tdefault:\n\t\t\treturn #{array_val.last};\n\t}";
+   
+ }
+ 
+ puts functions;
+
+ # puts  implementation_file;
+end
+
 
 if ARGV.length() == 0 then
   printf("Missing .yml file to parse input from\n");
@@ -86,9 +140,10 @@ else
     states_hash.store("#{elem.node_name}",temp_arr);
     states_arr<<elem.node_name;
   end
-  puts return_header_file_template(states_arr);
-  
-  puts states_hash;
+#  return_header_file_template(states_arr);
+   return_implementation_file_template(states_arr,states_hash);
+
+#  puts states_hash;
   exit(0);
 end
 
