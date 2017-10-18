@@ -78,6 +78,7 @@ def return_implementation_file_template(states_array, states_hash)
 #include <stdio.h>
 
 #include "fsm.h"
+
 SECTION1
  
  implementation_file+= <<SECTION2
@@ -97,29 +98,39 @@ SECTION2
      states+=",";
    end                                            
  }
- implementation_file+=states+="\n};";
+ implementation_file+=states+="\n};\n";
  
  #build trigger_<> function bodies
  states_hash.each{ |key, array_val |
-   functions+= "\ntheState trigger_#{key}(void){\n\n";
-   functions+="\tchar *current_state = \"#{key}\";\n";
-   functions+="\tprintf(\"ACTION: %s, TRIGGERED\\n\", current_state);"; #escape the \n
-   functions+="\n\tuint8_t go_to_state = #{array_val.last}\n";
-   functions+="\n\t/*here you can do whatever you must to go to the next possible states*/";
-   functions+="\n\t/*go_to_state = */\n";
-   functions+="\n\tswitch(go_to_state)";
-   functions+="\n\t{";
-   
-   array_val.each{ |elem|
-     functions+="\n\t\tcase #{elem}:\n\t\t\treturn #{elem};";
-   }   
-   functions+="\n\t\tdefault:\n\t\t\treturn #{array_val.last};\n\t}";
-   functions+="\n}\n";
+   if key.eql?(states_array.last) then
+     functions+= "\ntheState trigger_#{key}(void){\n\n";
+     functions+="\tchar *current_state = \"#{key}\";\n";
+     functions+="\tprintf(\"ACTION: %s, TRIGGERED\\n\", current_state);"; #escape the \n
+     functions+="\n\t/*you have entered the last state of the graph.There is nowhere to go from here.*/";
+     functions+="\n\texit(0);";
+     functions+="\n}\n";     
+   else
+     functions+= "\ntheState trigger_#{key}(void){\n\n";
+     functions+="\tchar *current_state = \"#{key}\";\n";
+     functions+="\tprintf(\"ACTION: %s, TRIGGERED\\n\", current_state);"; #escape the \n
+     functions+="\n\tuint8_t go_to_state = #{array_val.last}\n";
+     functions+="\n\t/*here you can do whatever you must to go to the next possible states*/";
+     functions+="\n\t/*go_to_state = */\n";
+     functions+="\n\tswitch(go_to_state)";
+     functions+="\n\t{";   
+     array_val.each{ |elem|
+       functions+="\n\t\tcase #{elem}:";
+       functions+="\n\t\t\tstrcpy(current_state,\"#{elem}\");"
+       functions+="\n\t\t\tprintf(\"GOING TO: %s \\n\", current_state);";
+       functions+="\n\t\t\treturn #{elem};";
+     }
+     functions+="\n\t\tdefault:\n\t\t\treturn #{array_val.last};\n\t}";
+     functions+="\n}\n";
+   end
  }
- 
- puts functions;
-
- # puts  implementation_file;
+  
+ implementation_file+=functions;
+ puts implementation_file;
 end
 
 

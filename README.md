@@ -38,9 +38,10 @@ An ASCII representation of the nodes and transitions is the following:
 
 Currently Supported Features: 
 
- 1. 
+ 1. Representation of the FSM in a yaml file (see shipped example poc-fsm.yml file).
+ 2. Parsing the .yml file and generation of one .h and one .c file. The .h file contains the definitions to be used, such as prototype functions, and a custom defined type for the states representation. The .c file contains skeleton code to implement your FSM transitioning logic. One function per defined state is generated with some facilities as: Documentation placeholder, logging of current triggered state and resulting state, and a Switch statement containig all possible next transitions for the specific state as they are described at the .yml file for the specific state. The generated skeleton functions are named trigger_<STATE_NAME\>, e.g, trigger_STATE6( );
 
-So for each of these states we create the following:
+Supported Features: 
 
 <u> 1. A states validity table. The rows holds the 'From' state and column holds the 'To' state. The library user should be able to call stateValidity[2][1] == 1 to check if the transition from 'state2' to 'state1' is a valid one. Be aware that the array might have stateValidity[2][1] == 1 and stateValidity[1][2] == 0 or stateValidity[2][2] == 1, all of which represents perfectly valid transitions for a FSM. Zero padding for the array should be optional and enabled by default to avoid confusion to the programmer.</u>
  

@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "fsm.h"
 
@@ -25,7 +26,7 @@
  * The zero indexed function is 'no_tran' and is used to have one to one
  * mapping between the trigger functions and the array indexes.
  */
-theState (* const state_trigger[MAX_STATES+1])(void) = { 
+theState (* const state_trigger[MAX_STATES+1])(void) = {
          no_tran, trigger_S1, trigger_S2, trigger_S3, trigger_S4
 };
 
@@ -66,6 +67,8 @@ theState trigger_S1(void){
     switch(go_to_state)
     {
         case STATE_2:
+            strcpy(current_state, "STATE_2");
+            printf("GOING TO: %s \n", current_state);
             return STATE_2;
         case STATE_3:
             return STATE_3;
