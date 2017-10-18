@@ -20,7 +20,7 @@ class StateNode
   end
 end#class def ends here
 
-#The heredoc template for the header file code gen.
+#The heredoc 'template' for the header file code gen.
 def return_header_file_template(states_array)
 
  states="";
@@ -67,7 +67,7 @@ SECTION4
  header_file;
 end
 
-#The heredoc template for the implementation (.c) file code gen.
+#The heredoc 'template' for the implementation (.c) file code gen.
 def return_implementation_file_template(states_array, states_hash)
 
  states="";
@@ -105,14 +105,16 @@ SECTION2
    functions+="\tchar *current_state = \"#{key}\";\n";
    functions+="\tprintf(\"ACTION: %s, TRIGGERED\\n\", current_state);"; #escape the \n
    functions+="\n\tuint8_t go_to_state = #{array_val.last}\n";
-   functions+="\n\t/*here you can do whatever you must to go to the next possible\n\t *we simply go random to one of the possible next states\n\t */\n";
-   functions+="\n\t/*go_to_state = */";
+   functions+="\n\t/*here you can do whatever you must to go to the next possible states*/";
+   functions+="\n\t/*go_to_state = */\n";
    functions+="\n\tswitch(go_to_state)";
    functions+="\n\t{";
-   functions+="\n\t\tcase :";
    
+   array_val.each{ |elem|
+     functions+="\n\t\tcase #{elem}:\n\t\t\treturn #{elem};";
+   }   
    functions+="\n\t\tdefault:\n\t\t\treturn #{array_val.last};\n\t}";
-   
+   functions+="\n}\n";
  }
  
  puts functions;
@@ -122,12 +124,16 @@ end
 
 
 if ARGV.length() == 0 then
-  printf("Missing .yml file to parse input from\n");
+  printf("Missing .yml file to parse state graph input from\n");
   exit(0);
 else
   printf("Using file:#{ARGV[0]} to parse the state graph and produce .c and .h files.\n");
-  temp_graph = YAML::load_file(ARGV[0]);
-  
+  begin
+    temp_graph = YAML::load_file(ARGV[0]);
+  rescue Psych::SyntaxError
+    puts "Invalid .yml file, exiting, plese conform to the shipped example or use the API to create the .yml file from ruby code.\n";
+    exit(-1);
+  end  
   states_hash = Hash.new();
   states_arr = Array.new();
   #temp_graph is an array containing StateNode objects.
@@ -147,9 +153,9 @@ else
   exit(0);
 end
 
-#-----------------------------------------------------------------------
-# api usage for your reference.
-#-----------------------------------------------------------------------
+#---------------------------------------------------------------------------
+# api usage for your reference, in order to create the .yml spec by code
+#---------------------------------------------------------------------------
 poc_fsm = Array.new();
 
 state1 = StateNode.new("State1");
@@ -178,4 +184,4 @@ yaml_file.write(poc_fsm.to_yaml);
 yaml_file.close();
 
 puts poc_fsm.to_yaml;
-#-----------------------------------------------------------------------
+#----------------------------------------------------------------------------
