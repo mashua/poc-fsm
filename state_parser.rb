@@ -1,6 +1,8 @@
 require 'psych'
 require 'yaml'
 
+FILE_GEN_DIR = "code_gen";
+
 class StateNode
 
   #The name of the node.  
@@ -133,7 +135,7 @@ SECTION2
  }
   
  implementation_file+=functions;
- puts implementation_file;
+ implementation_file;
 end
 
 
@@ -142,6 +144,7 @@ if ARGV.length() == 0 then
   exit(0);
 else
   printf("Using file:#{ARGV[0]} to parse the state graph and produce .c and .h files.\n");
+  printf("Files will be generated at #{Dir.pwd.concat("/").concat(FILE_GEN_DIR)} directory\n");
   begin
     temp_graph = YAML::load_file(ARGV[0]);
   rescue Psych::SyntaxError
@@ -160,10 +163,24 @@ else
     states_hash.store("#{elem.node_name}",temp_arr);
     states_arr<<elem.node_name;
   end
-#  return_header_file_template(states_arr);
-   return_implementation_file_template(states_arr,states_hash);
-
-#  puts states_hash;
+  begin
+    unless Dir.exist?(File.join(Dir.pwd, FILE_GEN_DIR))
+      Dir.mkdir(File.join(Dir.pwd, FILE_GEN_DIR), 0777);
+    end
+    fsmc = File.new(File.join(Dir.pwd, FILE_GEN_DIR, "gfsm.c"), "w");
+    fsmc.write(return_implementation_file_template(states_arr,states_hash).to_s);
+    fsmc.flush();
+    fsmc.close();    
+    fsmh = File.new(File.join(Dir.pwd, FILE_GEN_DIR, "gfsm.h"), "w");
+    fsmh.write(return_header_file_template(states_arr));
+    fsmh.flush();
+    fsmh.close();
+  rescue
+   raise();
+  ensure
+    #nothing
+  end
+  #bye!
   exit(0);
 end
 
@@ -185,6 +202,8 @@ state3 = StateNode.new("State3");
 state3.add_visiting_node("State1");
 state3.add_visiting_node("State4");
 
+#this is the last state from where you are not trancending to nowhere.
+#it is represented by an empty array in the .yml file.
 state4 = StateNode.new("State4");
 
 poc_fsm << state1;
