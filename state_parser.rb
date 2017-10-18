@@ -123,8 +123,11 @@ SECTION2
        functions+="\n\t\t\tstrcpy(current_state,\"#{elem}\");"
        functions+="\n\t\t\tprintf(\"GOING TO: %s \\n\", current_state);";
        functions+="\n\t\t\treturn #{elem};";
-     }
-     functions+="\n\t\tdefault:\n\t\t\treturn #{array_val.last};\n\t}";
+     };
+     functions+="\n\t\tdefault:";
+     functions+="\n\t\t\tstrcpy(current_state,\"#{array_val.last}\");"
+     functions+="\n\t\t\tprintf(\"GOING TO: %s \\n\", current_state);"
+     functions+="\n\t\t\treturn #{array_val.last};\n\t}";
      functions+="\n}\n";
    end
  }
