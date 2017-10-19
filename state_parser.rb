@@ -36,8 +36,8 @@ SECTION1
  header_file+= <<SECTION2
 /* The states representation, */
 typedef enum
-{ 
-  NO_STATE = 0,
+{
+\tNO_STATE = 0,
 SECTION2
 
  #build the states enum contents
@@ -48,7 +48,7 @@ SECTION2
  header_file+=states;
  
  header_file+= <<SECTION3
-  LAST_STATE
+\tLAST_STATE
 } theState;
 
 /*MAX_STATES includes the range [NO_STATE - IDLE_STATE] or [0-6]*/
