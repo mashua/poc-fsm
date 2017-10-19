@@ -88,18 +88,18 @@ SECTION1
  * The zero indexed function is 'no_tran' and is used to have one to one
  * mapping between the trigger functions and the array indexes.
  */
-theState (* const state_trigger[MAX_STATES+1])(void) = {
-         no_tran,
+theState (* const state_trigger[MAX_STATES+1])(void) = {\n\tno_tran /* no_tran function used for zero padding */,
 SECTION2
- 
+
  #build the function pointers for the upper array
  states_array.each_index { |elem_index|
-   states+=" "+states_array[elem_index].to_s;
-   #don't put an extra ',' on the last array element
+   states+="\t"+states_array[elem_index];
+   #don't put an extra ',' on the last array element, although that later C standards hava added support for it.
    unless elem_index == states_array.length()-1
      states+=",";
-   end                                            
- }
+   end
+}
+          
  implementation_file+=states+="\n};\n";
  
  #build trigger_<> function bodies
