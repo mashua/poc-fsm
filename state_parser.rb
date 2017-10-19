@@ -59,6 +59,14 @@ SECTION3
 
 /* Function prototypes for triggering states */
 
+/**
+*
+* Function to handle a no valid transition.
+* Also used for zero padding the states array.
+* @return
+*/
+theState no_tran(void);
+
 SECTION4
 
  states_array.each{ |elem|
@@ -101,6 +109,14 @@ SECTION2
 }
           
  implementation_file+=states+="\n};\n";
+
+ #build the no_tran function
+ functions+= "\ntheState no_tran(void){\n\n";
+ functions+="\tchar *current_state = \"NO_TRAN_STATE\";\n";
+ functions+="\tprintf(\"ACTION: %s, TRIGGERED\\n\", current_state);"; #escape the \n
+ functions+="\n\t/*you have entered a non-valid state of the graph. Something weird has happened.*/";
+ functions+="\n\texit(0);";
+ functions+="\n}\n";
  
  #build trigger_<> function bodies
  states_hash.each{ |key, array_val |
