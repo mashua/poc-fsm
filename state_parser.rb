@@ -157,20 +157,26 @@ SECTION2
      functions+="\n\tuint8_t go_to_state = #{array_val.last};\n";
      functions+="\n\t/*here you can do whatever you must to go to the next possible states*/";
      functions+="\n\t/*go_to_state = */\n";
-     functions+="\n\tswitch(go_to_state)";
-     functions+="\n\t{";   
-     array_val.each{ |elem|
-       functions+="\n\t\tcase #{elem}:";
-       functions+="\n\t\t\tstrcpy(current_state,\"#{elem}\");"
-       functions+="\n\t\t\tprintf(\"GOING TO: %s \\n\", current_state);";
-       functions+="\n\t\t\tfree(current_state);";
-       functions+="\n\t\t\treturn #{elem};";
-     };
-     functions+="\n\t\tdefault:";
-     functions+="\n\t\t\tstrcpy(current_state,\"#{array_val.last}\");"
-     functions+="\n\t\t\tprintf(\"GOING TO: %s \\n\", current_state);"
-     functions+="\n\t\t\treturn #{array_val.last};\n\t}";
+     
+     functions+="\n\tstrcpy(current_state, state_names[go_to_state]);"
+     functions+="\n\tprintf(\"GOING TO: %s \\n\", current_state);";
+     functions+="\n\tfree(current_state);";
+     functions+="\n\treturn go_to_state;";
      functions+="\n}\n";
+#     functions+="\n\tswitch(go_to_state)";
+#     functions+="\n\t{";   
+#     array_val.each{ |elem|
+#       functions+="\n\t\tcase #{elem}:";
+#       functions+="\n\t\t\tstrcpy(current_state,\"#{elem}\");"
+#       functions+="\n\t\t\tprintf(\"GOING TO: %s \\n\", current_state);";
+#       functions+="\n\t\t\tfree(current_state);";
+#       functions+="\n\t\t\treturn #{elem};";
+#     };
+#     functions+="\n\t\tdefault:";
+#     functions+="\n\t\t\tstrcpy(current_state,\"#{array_val.last}\");"
+#     functions+="\n\t\t\tprintf(\"GOING TO: %s \\n\", current_state);"
+#     functions+="\n\t\t\treturn #{array_val.last};\n\t}";
+#     functions+="\n}\n";
    end
  }
   
