@@ -241,6 +241,7 @@ end
 
 if ARGV.length() == 0 then
   printf("Missing .yml file to parse state graph input from\n");
+  printf("Usage is as of 'ruby state_parser.rb' <states_file.yml>\n");
   exit(0);
 else
   printf("Using file:#{ARGV[0]} to parse the state graph and produce .c and .h files.\n");
@@ -279,8 +280,11 @@ else
     samplemainc.write(return_sample_main_file_template(states_arr,states_hash).to_s);
     samplemainc.flush();
     samplemainc.close();
-  rescue
-   raise();
+    printf("Finish examining states.\n");
+    printf("Check 'code_gen' directory for the generated code.\n");
+  rescue Exception => ex
+    puts ex;
+    raise();
   ensure
     #nothing
   end
