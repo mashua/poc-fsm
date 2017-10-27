@@ -1,0 +1,22 @@
+#Sample .yml representation of the example poc-fsm state machine.
+#For visual insection see the shipped attached .tex, .dia
+---
+- !ruby/object:StateNode
+  node_name: State1
+  nodes_to_go:
+  - State2
+  - State3
+  - State4
+- !ruby/object:StateNode
+  node_name: State2
+  nodes_to_go:
+  - State3
+  - State4
+- !ruby/object:StateNode
+  node_name: State3
+  nodes_to_go:
+  - State1
+  - State4
+- !ruby/object:StateNode
+  node_name: State4
+  nodes_to_go: []
