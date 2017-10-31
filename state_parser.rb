@@ -241,8 +241,10 @@ SECTION3
  sample_main_code;
 end
 
-#Parsed .tex file containing the graph representation.
-#matches (<node_names>) in lines containing "\path" text lines
+#Parses .tex file containing the graph representation.
+#Matches (<node_names>) in lines containing "\path" text lines
+#Returns the a hash of the graph, where the hash keys are the
+#starting nodes and each key value is an array of the visiting nodes.
 def parse_tex_file()
 
   reg = /\(([^()]+)\)/;#regex to match the \path lines to extract the nodes info.
@@ -264,14 +266,9 @@ def parse_tex_file()
        graph_hash.store(match_data[0][0], Array.new());
        graph_hash.store(match_data[0][0], graph_hash[match_data[0][0]] << match_data[1][0] );
      end
-     #create a Hash, with unique keys the nodes
-     #for each key, the value will be an array of nodes -they are the visiting nodes-
-    # visiting_nodes_ar << match_data[1][0];
-    # graph_hash.store("#{match_data[0][0]}", visiting_nodes_ar);
     end
-  }
-  puts graph_hash;
-  exit(-1);
+ }
+ graph_hash;
 end
 
 if ARGV.length() == 0 then
@@ -285,7 +282,8 @@ else
   printf("Files will be generated at #{Dir.pwd.concat("/").concat(FILE_GEN_DIR)} directory\n");
   begin
     #parse .tex file.
-    parse_tex_file();
+    graph_hash =  parse_tex_file();
+#    p graph_hash;
     #write .yml file
    
    # temp_graph = YAML::load_file(ARGV[0]);
