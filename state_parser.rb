@@ -241,19 +241,58 @@ SECTION3
  sample_main_code;
 end
 
+#Parsed .tex file containing the graph representation.
+#matches (<node_names>) in lines containing "\path" text lines
+def parse_tex_file()
+
+  reg = /\(([^()]+)\)/;#regex to match the \path lines to extract the nodes info.
+  t = File.open("poc-fsm.tex","r");
+  graph_hash = Hash.new();
+  
+  t.each_line{ |line_text|
+    if(line_text.to_s.match(/.*?(path)/) != nil) then
+      #i'm on a text line that contains \path tikz tex code.
+     #match data is in form [["node1"],["node2"]]
+     match_data = line_text.scan(reg);
+     if( graph_hash.key?(match_data[0][0])) then
+       #node as a key exists
+       temp = graph_hash[match_data[0][0]];
+       temp << match_data[1][0];
+       graph_hash.store(match_data[0][0], temp);
+     elsif
+       #key does not exist       
+       graph_hash.store(match_data[0][0], Array.new());
+       graph_hash.store(match_data[0][0], graph_hash[match_data[0][0]] << match_data[1][0] );
+     end
+     #create a Hash, with unique keys the nodes
+     #for each key, the value will be an array of nodes -they are the visiting nodes-
+    # visiting_nodes_ar << match_data[1][0];
+    # graph_hash.store("#{match_data[0][0]}", visiting_nodes_ar);
+    end
+  }
+  puts graph_hash;
+  exit(-1);
+end
+
 if ARGV.length() == 0 then
-  printf("Missing .yml file to parse state graph input from\n");
-  printf("Usage is as of 'ruby state_parser.rb' <states_file.yml>\n");
+  printf("Missing .tex file to parse state graph input from\n");
+  printf("Usage is as of 'ruby state_parser.rb' <states_file.tex>\n");
+#  printf("Missing .yml file to parse state graph input from\n");
+#  printf("Usage is as of 'ruby state_parser.rb' <states_file.yml>\n");
   exit(0);
 else
-  printf("Using file:#{ARGV[0]} to parse the state graph and produce .c and .h files.\n");
+  printf("Using file:#{ARGV[0]} to parse the state graph and produce the .yml .c and .h files.\n");
   printf("Files will be generated at #{Dir.pwd.concat("/").concat(FILE_GEN_DIR)} directory\n");
   begin
-    temp_graph = YAML::load_file(ARGV[0]);
+    #parse .tex file.
+    parse_tex_file();
+    #write .yml file
+   
+   # temp_graph = YAML::load_file(ARGV[0]);
   rescue Psych::SyntaxError
     puts "Invalid .yml file, exiting, plese conform to the shipped example or use the API to create the .yml file from ruby code.\n";
     exit(-1);
-  end  
+  end
   states_hash = Hash.new();
   states_arr = Array.new();
   #temp_graph is an array containing StateNode objects.
