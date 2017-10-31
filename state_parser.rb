@@ -271,6 +271,28 @@ def parse_tex_file()
  graph_hash;
 end
 
+#Accepts the graph represented in a hash an
+#converts it to a .yml file.
+def create_yaml_repr(the_graph_hash)
+
+  nodes_array = Array.new();
+  #For each key, create a StateNode object
+  #and for each values add visiting nodes to the StateNode object
+  the_graph_hash.keys.each{ |key|
+
+    temp_state_node = StateNode.new(key);
+    nodes_array << temp_state_node;
+    the_graph_hash[key].each{ |visiting_node|
+      temp_state_node.add_visiting_node(visiting_node);
+    }    
+  }
+  yaml_file = File.new("test.yml","w" );
+  yaml_file.write(nodes_array.to_yaml);
+  yaml_file.close();
+  
+  exit(1);
+end
+ 
 if ARGV.length() == 0 then
   printf("Missing .tex file to parse state graph input from\n");
   printf("Usage is as of 'ruby state_parser.rb' <states_file.tex>\n");
@@ -285,7 +307,7 @@ else
     graph_hash =  parse_tex_file();
 #    p graph_hash;
     #write .yml file
-   
+   create_yaml_repr(graph_hash);
    # temp_graph = YAML::load_file(ARGV[0]);
   rescue Psych::SyntaxError
     puts "Invalid .yml file, exiting, plese conform to the shipped example or use the API to create the .yml file from ruby code.\n";
