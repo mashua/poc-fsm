@@ -254,7 +254,7 @@ def parse_tex_file()
   t.each_line{ |line_text|
     if(line_text.to_s.match(/.*?(path)/) != nil) then
       #i'm on a text line that contains \path tikz tex code.
-     #match data is in form [["node1"],["node2"]]
+     #matched data is in form [["node1"],["node2"]]
      match_data = line_text.scan(reg);
      if( graph_hash.key?(match_data[0][0])) then
        #node as a key exists
@@ -286,11 +286,9 @@ def create_yaml_repr(the_graph_hash)
       temp_state_node.add_visiting_node(visiting_node);
     }    
   }
-  yaml_file = File.new("test.yml","w" );
+  yaml_file = File.new("poc-fsm.yml","w" );
   yaml_file.write(nodes_array.to_yaml);
   yaml_file.close();
-  
-  exit(1);
 end
  
 if ARGV.length() == 0 then
