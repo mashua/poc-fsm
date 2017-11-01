@@ -120,7 +120,9 @@ SECTION2
 
 # implementation_file+=states+="\n};\n";
  states+="\n};\n\n";
- #build the states name array          
+ #build the states name array       
+
+   
  states+="static char *state_names[] = {\n\t\"ZP\", /* used for zero padding */\n\t";
  
  states_array.each_index { |elem_index|
@@ -254,7 +256,7 @@ def parse_tex_file()
   t.each_line{ |line_text|
     if(line_text.to_s.match(/.*?(path)/) != nil) then
       #i'm on a text line that contains \path tikz tex code.
-     #matched data is in form [["node1"],["node2"]]
+     #match data is in form [["node1"],["node2"]]
      match_data = line_text.scan(reg);
      if( graph_hash.key?(match_data[0][0])) then
        #node as a key exists
@@ -286,20 +288,39 @@ def create_yaml_repr(the_graph_hash)
       temp_state_node.add_visiting_node(visiting_node);
     }    
   }
-  yaml_file = File.new("poc-fsm.yml","w" );
-  yaml_file.write(nodes_array.to_yaml);
-  yaml_file.close();
+  dump_file(nodes_array.to_yaml, "poc-fsm1.yml");
 end
- 
+
+def dump_file(the_file_content, filename)
+  
+  file = File.new(filename,"w");
+  file.write(the_file_content.to_s);
+  file.flush();
+  file.close();
+end
+
 if ARGV.length() == 0 then
-  printf("Missing .tex file to parse state graph input from\n");
+  printf("Missing .tex or .yml file to parse state graph info.\n");
   printf("Usage is as of 'ruby state_parser.rb' <states_file.tex>\n");
-#  printf("Missing .yml file to parse state graph input from\n");
-#  printf("Usage is as of 'ruby state_parser.rb' <states_file.yml>\n");
+  printf("of as of 'ruby state_parser.rb' <states_file.yml>\n");
   exit(0);
 else
   printf("Using file:#{ARGV[0]} to parse the state graph and produce the .yml .c and .h files.\n");
   printf("Files will be generated at #{Dir.pwd.concat("/").concat(FILE_GEN_DIR)} directory\n");
+  if ARGV[0].to_s.match(/\.tex/) != nil then
+  #
+    graph = parse_tex_file();
+    create_yaml_repr(graph);
+    printf(".yml file generated, inspect it as nesessary, or now run 'ruby ./state_parser.rb <generated_file>.yml' to generate driving code for your FSM.\n");
+    exit(0);
+  elsif ARGV[0].to_s.match(/\.yml/) != nil
+  #
+    create_yaml_repr();
+  else
+    raise Exception.new("Out of this world error");
+    exit(-1);
+  end
+  
   begin
     #parse .tex file.
     graph_hash =  parse_tex_file();
