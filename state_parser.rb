@@ -267,7 +267,7 @@ def parse_tex_file()
        #key does not exist       
        graph_hash.store(match_data[0][0], Array.new());
        unless match_data[0][0].to_s.eql?(match_data[1][0]) #the same state name in source and destination.
-         graph_hash.store(match_data[0][0], graph_hash[match_data[0][0]] << match_data[1][0] );       
+         graph_hash.store(match_data[0][0], graph_hash[match_data[0][0]] << match_data[1][0] );
        end
      end
     end
@@ -302,32 +302,41 @@ def dump_file(the_file_content, filename)
 end
 
 if ARGV.length() == 0 then
-  printf("Missing .tex or .yml file to parse state graph info.\n");
-  printf("Usage is as of 'ruby state_parser.rb' <states_file.tex>\n");
-  printf("of as of 'ruby state_parser.rb' <states_file.yml>\n");
-  exit(0);
+  printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+  printf("\nMissing .tex or .yml file to parse state graph info.\n");
+  printf("Usage is like:\n");
+  printf("\t'ruby state_parser.rb' <states_file.tex>\n");
+  printf("or:\n");
+  printf("\t'ruby state_parser.rb' <states_file.yml>\n");
+  printf("~exited(-1):\n");
+  exit(-1);
 else
-  printf("Using file:#{ARGV[0]} to parse the state graph and produce the .yml .c and .h files.\n");
-  printf("Files will be generated at #{Dir.pwd.concat("/").concat(FILE_GEN_DIR)} directory\n");
+#  printf("Using file:#{ARGV[0]} to parse the state graph and produce the .yml .c and .h files.\n");
+#  printf("Files will be generated at #{Dir.pwd.concat("/").concat(FILE_GEN_DIR)} directory\n");
   if ARGV[0].to_s.match(/\.tex/) != nil then
   #
     graph = parse_tex_file();
     create_yaml_repr(graph);
-    printf(".yml file generated, inspect it as nesessary, or now run 'ruby ./state_parser.rb <generated_file>.yml' to generate driving code for your FSM.\n");
+    printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+    printf("\npoc-fsm.yml file generated, inspect it as nesessary, or now run \n'ruby state_parser.rb poc-fsm.yml' to generate the driving code for your FSM.\n");
+    printf("~exited(0):\n");
     exit(0);
   elsif ARGV[0].to_s.match(/\.yml/) != nil
   #
     begin
       temp_graph = YAML::load_file(ARGV[0]);
     rescue Psych::SyntaxError
-      puts "Invalid .yml file, exiting, plese conform to the shipped example or use the API to create the .yml file from ruby code.\n";
+      printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+      printf("\nInvalid .yml file, exiting, plese conform to the shipped example \nor use the API to create the .yml file from ruby code.\n");
+      printf("~exited(-1):\n");
       exit(-1);
     end
     states_hash = Hash.new();
     states_arr = Array.new();
     #temp_graph is an array containing StateNode objects.
+    printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
     temp_graph.each do |elem|
-      puts "Now examing #{elem.node_name}...\n";
+      printf("\nNow examing #{elem.node_name}...");
       temp_arr = Array.new();
       elem.nodes_to_go.each do |inner_elem|
         temp_arr << inner_elem;
@@ -351,9 +360,8 @@ else
       samplemainc.write(return_sample_main_file_template(states_arr,states_hash).to_s);
       samplemainc.flush();
       samplemainc.close();
-      printf("Finish examining states.\n");
-      printf("Check 'code_gen' directory for the generated code.\n");
-      
+      printf("Finish examining states and generating code.\n");
+      printf("Check 'code_gen' directory for the generated code.\n");      
     rescue Exception => ex
       puts ex;
       raise();
@@ -370,6 +378,7 @@ end
 
 #---------------------------------------------------------------------------
 # api usage for your reference, in order to create the .yml spec by code
+# and then parsi it from this script
 #---------------------------------------------------------------------------
 poc_fsm = Array.new();
 
