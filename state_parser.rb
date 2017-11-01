@@ -26,11 +26,6 @@ end#class def ends here
 
 #The heredoc 'template' for the header file code gen.
 def return_header_file_template(states_array)
-
-#  max_states_len = 0;
- # states_array.each{ |elem|
-  #  unless elem.length < max_states_len
-  #}
  
  states="";
  functions="";
@@ -250,7 +245,7 @@ end
 def parse_tex_file()
 
   reg = /\(([^()]+)\)/;#regex to match the \path lines to extract the nodes info.
-  t = File.open("poc-fsm.tex","r");
+  t = File.open("".concat(ARGV[0].to_s),"r");
   graph_hash = Hash.new();
   
   t.each_line{ |line_text|
@@ -290,7 +285,7 @@ def create_yaml_repr(the_graph_hash)
       temp_state_node.add_visiting_node(visiting_node);
     }    
   }
-  dump_file(nodes_array.to_yaml, "poc-fsm.yml");
+  dump_file(nodes_array.to_yaml, "#{ARGV[0].split(".")[0].concat(".yml")}");
 end
 
 def dump_file(the_file_content, filename)
@@ -318,7 +313,8 @@ else
     graph = parse_tex_file();
     create_yaml_repr(graph);
     printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
-    printf("\npoc-fsm.yml file generated, inspect it as nesessary, or now run \n'ruby state_parser.rb poc-fsm.yml' to generate the driving code for your FSM.\n");
+#    p ARGV[0].split(".")
+    printf("\n#{ARGV[0].split(".")[0].concat(".yml")} file generated, inspect it as nesessary, or now run \n'ruby state_parser.rb #{ARGV[0].split(".")[0].concat(".yml")}' to generate the driving code for your FSM.\n");
     printf("~exited(0):\n");
     exit(0);
   elsif ARGV[0].to_s.match(/\.yml/) != nil
