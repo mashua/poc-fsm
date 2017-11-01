@@ -3,7 +3,7 @@
 A proof-of-concept Finite State Machine (FSM) implementation in ansi C and a code generation utility to construct the relevant .c and .h files needed to implement the described FSM. The representation of the states and the transitions between them is represented in a .tex file for easy visual inspection of your FSM. This .tex file is a totaly valid .tex document, and if you compile it by hand ( pdflatex <file>.tex ) then you should have a .pdf file of your FSM.
 The state_parser.rb script parses that .tex file and produces a .yml file, in which later the same script uses to generate the .c and .h files.
 
-**(read the <u>Future Work may be</u> section number 2, for very important info about the last/final state of your FSM)**
+**(read the <u>'Future Work may be'</u> section number 2, for very important info about the last/final state of your FSM)**
 
 For the example implemented FSM see the attached poc-fsm.dia diagramm [1] and/or the poc-fsm.yml file, you can also compile a .pdf from the shipped .tex file [2]. The sample FSM has four states. The initial state is 'state1' and the transition are as follows:
 
@@ -47,7 +47,9 @@ An ASCII representation of the nodes and transitions is the following:
 
 1. A states validity table. The rows holds the 'From' state and column holds the 'To' state. The library user should be able to call stateValidity[2][1] == 1 to check if the transition from 'state2' to 'state1' is a valid one. Be aware that the array might have stateValidity[2][1] == 1 and stateValidity[1][2] == 0 or stateValidity[2][2] == 1, all of which represents perfectly valid transitions for a FSM. Zero padding for the array should be optional and enabled by default to avoid confusion to the programmer.
 
-2. Currently the last state is not in the graph because adding a line like: "\path (state3) edge node {} (state3);" wouldn't make much sense at the generated pdf and also visualy destroys the final produced result. If you wanted generated either way (the code generator have a special case for it) you can add it by hand in the produced .yml file. The final state in the shipped example is represented by a node_name: State4 and nodes_to_go: [], which is an empty ruby array. See the shipped .yml file.
+2. Currently the last state is represented in the .tex file with a line like: "%\path (state4) edge node {} (state4);". Leaving this line uncommented wouldn't make much sense at the generated pdf and also visualy destroys the final result, so leave it commented out until a better solution will be introduced if the future.
+
+3. Find a better solution for the above (2.)
 
 [1] To properly open, view and edit .dia files, you need the [Dia](http://live.gnome.org/Dia) program.
 

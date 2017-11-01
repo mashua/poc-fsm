@@ -32,6 +32,9 @@
   \path (state2) edge node {} (state4);
   \path (state3) edge node {} (state1);
   \path (state3) edge node {} (state4);
+%the following comment line is the last node with no transition.
+%leave it here, so we can recognize this last state.
+%\path (state4) edge node {} (state4);
   
 \end{tikzpicture}
 

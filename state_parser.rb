@@ -266,7 +266,9 @@ def parse_tex_file()
      elsif
        #key does not exist       
        graph_hash.store(match_data[0][0], Array.new());
-       graph_hash.store(match_data[0][0], graph_hash[match_data[0][0]] << match_data[1][0] );
+       unless match_data[0][0].to_s.eql?(match_data[1][0]) #the same state name in source and destination.
+         graph_hash.store(match_data[0][0], graph_hash[match_data[0][0]] << match_data[1][0] );       
+       end
      end
     end
  }
@@ -288,7 +290,7 @@ def create_yaml_repr(the_graph_hash)
       temp_state_node.add_visiting_node(visiting_node);
     }    
   }
-  dump_file(nodes_array.to_yaml, "poc-fsm1.yml");
+  dump_file(nodes_array.to_yaml, "poc-fsm.yml");
 end
 
 def dump_file(the_file_content, filename)
@@ -315,58 +317,52 @@ else
     exit(0);
   elsif ARGV[0].to_s.match(/\.yml/) != nil
   #
-    create_yaml_repr();
+    begin
+      temp_graph = YAML::load_file(ARGV[0]);
+    rescue Psych::SyntaxError
+      puts "Invalid .yml file, exiting, plese conform to the shipped example or use the API to create the .yml file from ruby code.\n";
+      exit(-1);
+    end
+    states_hash = Hash.new();
+    states_arr = Array.new();
+    #temp_graph is an array containing StateNode objects.
+    temp_graph.each do |elem|
+      puts "Now examing #{elem.node_name}...\n";
+      temp_arr = Array.new();
+      elem.nodes_to_go.each do |inner_elem|
+        temp_arr << inner_elem;
+      end
+      states_hash.store("#{elem.node_name}",temp_arr);
+      states_arr<<elem.node_name;
+    end
+    begin
+      unless Dir.exist?(File.join(Dir.pwd, FILE_GEN_DIR))
+        Dir.mkdir(File.join(Dir.pwd, FILE_GEN_DIR), 0777);
+      end
+      fsmc = File.new(File.join(Dir.pwd, FILE_GEN_DIR, "fsm.c"), "w");
+      fsmc.write(return_implementation_file_template(states_arr,states_hash).to_s);
+      fsmc.flush();
+      fsmc.close();    
+      fsmh = File.new(File.join(Dir.pwd, FILE_GEN_DIR, "fsm.h"), "w");
+      fsmh.write(return_header_file_template(states_arr));
+      fsmh.flush();
+      fsmh.close();
+      samplemainc = File.new(File.join(Dir.pwd, FILE_GEN_DIR, "samplemain.c"), "w");
+      samplemainc.write(return_sample_main_file_template(states_arr,states_hash).to_s);
+      samplemainc.flush();
+      samplemainc.close();
+      printf("Finish examining states.\n");
+      printf("Check 'code_gen' directory for the generated code.\n");
+      
+    rescue Exception => ex
+      puts ex;
+      raise();
+    ensure
+      #nothing
+    end   
   else
     raise Exception.new("Out of this world error");
     exit(-1);
-  end
-  
-  begin
-    #parse .tex file.
-    graph_hash =  parse_tex_file();
-#    p graph_hash;
-    #write .yml file
-   create_yaml_repr(graph_hash);
-   # temp_graph = YAML::load_file(ARGV[0]);
-  rescue Psych::SyntaxError
-    puts "Invalid .yml file, exiting, plese conform to the shipped example or use the API to create the .yml file from ruby code.\n";
-    exit(-1);
-  end
-  states_hash = Hash.new();
-  states_arr = Array.new();
-  #temp_graph is an array containing StateNode objects.
-  temp_graph.each do |elem|
-    puts "Now examing #{elem.node_name}...\n";
-    temp_arr = Array.new();
-    elem.nodes_to_go.each do |inner_elem|
-      temp_arr << inner_elem;
-    end
-    states_hash.store("#{elem.node_name}",temp_arr);
-    states_arr<<elem.node_name;
-  end
-  begin
-    unless Dir.exist?(File.join(Dir.pwd, FILE_GEN_DIR))
-      Dir.mkdir(File.join(Dir.pwd, FILE_GEN_DIR), 0777);
-    end
-    fsmc = File.new(File.join(Dir.pwd, FILE_GEN_DIR, "fsm.c"), "w");
-    fsmc.write(return_implementation_file_template(states_arr,states_hash).to_s);
-    fsmc.flush();
-    fsmc.close();    
-    fsmh = File.new(File.join(Dir.pwd, FILE_GEN_DIR, "fsm.h"), "w");
-    fsmh.write(return_header_file_template(states_arr));
-    fsmh.flush();
-    fsmh.close();
-    samplemainc = File.new(File.join(Dir.pwd, FILE_GEN_DIR, "samplemain.c"), "w");
-    samplemainc.write(return_sample_main_file_template(states_arr,states_hash).to_s);
-    samplemainc.flush();
-    samplemainc.close();
-    printf("Finish examining states.\n");
-    printf("Check 'code_gen' directory for the generated code.\n");
-  rescue Exception => ex
-    puts ex;
-    raise();
-  ensure
-    #nothing
   end
   #bye!
   exit(0);
