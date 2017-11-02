@@ -249,10 +249,16 @@ def parse_tex_file()
   graph_hash = Hash.new();
   
   t.each_line{ |line_text|
+#    if line_text[0].eql?("%") then #this line is commented alltogether
+#      next;
+#    end
     if(line_text.to_s.match(/.*?(path)/) != nil) then
       #i'm on a text line that contains \path tikz tex code.
      #match data is in form [["node1"],["node2"]]
      match_data = line_text.scan(reg);
+   if match_data.length == 1 then #this line is commented for a future \path with origing node but not destination
+     next;
+   end
      if( graph_hash.key?(match_data[0][0])) then
        #node as a key exists
        temp = graph_hash[match_data[0][0]];
@@ -265,7 +271,7 @@ def parse_tex_file()
          graph_hash.store(match_data[0][0], graph_hash[match_data[0][0]] << match_data[1][0] );
        end
      end
-    end
+   end
  }
  graph_hash;
 end
