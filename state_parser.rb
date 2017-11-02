@@ -140,7 +140,7 @@ SECTION2
  
  #build trigger_<> function bodies
  states_hash.each{ |key, array_val |
-   if key.eql?(states_array.last) then
+   if key.eql?(states_array.last) then #you are parsing the last state of your declared FSM
      functions+= "\ntheState trigger_#{key}(void){\n\n";
      functions+="\tchar *current_state = \"#{key}\";\n";
      functions+="\tprintf(\"STATE: %s, TRIGGERED\\n\", current_state);"; #escape the \n
@@ -155,27 +155,15 @@ SECTION2
      functions+="\tprintf(\"STATE: %s, TRIGGERED\\n\", current_state);"; #escape the \n
      functions+="\n\tuint8_t go_to_state = #{array_val.last};\n";
      functions+="\n\t/*here you can do whatever you must to go to the next possible states*/";
-     functions+="\n\t/*go_to_state = */\n";
+     functions+="\n\t/*keep in mind that the next possible states from this state are:*/";
+     functions+="\n\t/*#{array_val}*/";
+     functions+="\n\n\t/*go_to_state = */\n";
      
      functions+="\n\tstrcpy(current_state, state_names[go_to_state]);"
      functions+="\n\tprintf(\"GOING TO: %s \\n\", current_state);";
      functions+="\n\tfree(current_state);";
      functions+="\n\treturn go_to_state;";
      functions+="\n}\n";
-#     functions+="\n\tswitch(go_to_state)";
-#     functions+="\n\t{";   
-#     array_val.each{ |elem|
-#       functions+="\n\t\tcase #{elem}:";
-#       functions+="\n\t\t\tstrcpy(current_state,\"#{elem}\");"
-#       functions+="\n\t\t\tprintf(\"GOING TO: %s \\n\", current_state);";
-#       functions+="\n\t\t\tfree(current_state);";
-#       functions+="\n\t\t\treturn #{elem};";
-#     };
-#     functions+="\n\t\tdefault:";
-#     functions+="\n\t\t\tstrcpy(current_state,\"#{array_val.last}\");"
-#     functions+="\n\t\t\tprintf(\"GOING TO: %s \\n\", current_state);"
-#     functions+="\n\t\t\treturn #{array_val.last};\n\t}";
-#     functions+="\n}\n";
    end
  }
   
