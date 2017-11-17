@@ -1,0 +1,6 @@
+*.aux
+*.pdf
+*.log
+*.gz
+/code_gen/*
+/poc-fsm/*

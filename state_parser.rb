@@ -67,14 +67,14 @@ SECTION3
 *
 * Function to handle a no valid transition.
 * Also used for zero padding the states array.
-* @return
+* @return theState
 */
 theState no_tran(void);
 
 SECTION4
 
  states_array.each{ |elem|
-   functions+="/**\n * Function to trigger state #{elem}.\n * @return\n */\n theState trigger_#{elem}(void);\n\n";
+   functions+="/**\n * Function to trigger state #{elem}.\n * @return theState\n */\n theState trigger_#{elem}(void);\n\n";
  }
  header_file+=functions;
  header_file+="#endif /*FSM_H*/"; 
