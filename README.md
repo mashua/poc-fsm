@@ -2,7 +2,7 @@
 
 A proof-of-concept Finite State Machine (FSM) implementation in ansi C and a code generation utility to construct the relevant .c and .h files needed to drive the described FSM. The representation of the states and the transitions between them is represented in a .tex file for easy visual inspection of your FSM. This .tex file is a totaly valid .tex document, and if you compile it by hand ( pdflatex <filename\>.tex ) then you should have a .pdf file of your FSM showing the states and the transition between them. The state_parser.rb script parses that .tex file and produces a .yml file, in which later the same script uses to generate the .c and .h files.
 
-s**(read the <u>'Future Work may be'</u> section number 2, for very important info about the last/final state of your FSM)**
+**(read the <u>'Future Work may be'</u> section number 2, for very important info about the last/final state of your FSM)**
 
 For the shipped example implemented FSM see the attached poc-fsm.dia diagramm [1] and/or the poc-fsm.yml file, you can also compile a .pdf from the shipped .tex file [2]. The sample FSM has four states. The initial state is 'state1' and the transition are as follows:
 
