@@ -69,12 +69,12 @@ SECTION3
 * Also used for zero padding the states array.
 * @return #{"theState_".concat(ARGV[0].split(".")[0])}
 */
-#{"theState_".concat(ARGV[0].split(".")[0])} no_tran(void *);
+#{"theState_".concat(ARGV[0].split(".")[0])} no_tran( void *);
 
 SECTION4
 
  states_array.each{ |elem|
-   functions+="/**\n * Function to trigger state #{elem}.\n * @return #{"theState_".concat(ARGV[0].split(".")[0])}\n */\n #{"theState_".concat(ARGV[0].split(".")[0])} trigger_#{elem}(void *);\n\n";
+   functions+="/**\n * Function to trigger state #{elem}.\n * @return #{"theState_".concat(ARGV[0].split(".")[0])}\n */\n #{"theState_".concat(ARGV[0].split(".")[0])} trigger_#{elem}( void *);\n\n";
  }
  header_file+=functions;
  header_file+="#endif /*FSM_H*/"; 
@@ -101,7 +101,7 @@ SECTION1
  * The zero indexed function is 'no_tran' and is used to have one to one
  * mapping between the trigger functions and the array indexes.
  */
-#{"theState_".concat(ARGV[0].split(".")[0])} (* const state_trigger[MAX_STATES+1])(void *) = {\n\tno_tran, /* no_tran function used for zero padding */
+#{"theState_".concat(ARGV[0].split(".")[0])} (* const state_trigger[MAX_STATES+1])( void *) = {\n\tno_tran, /* no_tran function used for zero padding */
 SECTION2
 
  #build the function pointers for the upper array
@@ -131,7 +131,7 @@ SECTION2
  implementation_file+=states;
  
  #build the no_tran function
- functions+= "\n#{"theState_".concat(ARGV[0].split(".")[0])} no_tran(void *theSession){\n\n";
+ functions+= "\n#{"theState_".concat(ARGV[0].split(".")[0])} no_tran( void *theSession){\n\n";
  functions+="\tchar *current_state = \"NO_TRAN_STATE\";\n";
  functions+="\tprintf(\"ACTION: %s, TRIGGERED\\n\", current_state);"; #escape the \n
  functions+="\n\t/*you have entered a non-valid state of the graph. Something weird has happened.*/";
@@ -141,14 +141,14 @@ SECTION2
  #build trigger_<> function bodies
  states_hash.each{ |key, array_val |
    if key.eql?(states_array.last) then #you are parsing the last state of your declared FSM
-     functions+= "\n#{"theState_".concat(ARGV[0].split(".")[0])} trigger_#{key}(void *theSession){\n\n";
+     functions+= "\n#{"theState_".concat(ARGV[0].split(".")[0])} trigger_#{key}( void *theSession){\n\n";
      functions+="\tchar *current_state = \"#{key}\";\n";
      functions+="\tprintf(\"STATE: %s, TRIGGERED\\n\", current_state);"; #escape the \n
      functions+="\n\t/*you have entered the last state of the graph.There is nowhere to go from here.*/";
      functions+="\n\texit(0);";
      functions+="\n}\n";     
    else
-     functions+= "\n#{"theState_".concat(ARGV[0].split(".")[0])} trigger_#{key}(void *theSession){\n\n";
+     functions+= "\n#{"theState_".concat(ARGV[0].split(".")[0])} trigger_#{key}( void *theSession){\n\n";
 #     functions+="\tchar *current_state = \"#{key}\";\n";
      functions+="\tchar *current_state = (char*)malloc(sizeof(char)*#{key.length});\n";
      functions+="\tstrcpy(current_state, \"#{key}\");\n";
@@ -190,7 +190,7 @@ SECTION1
  * The template code enters the first state as configured by your .yml file, 
  * and calls the relevant trigger_ function.
  */
-extern #{"theState_".concat(ARGV[0].split(".")[0])} (* const state_trigger[MAX_STATES+1])(void *);\n
+extern #{"theState_".concat(ARGV[0].split(".")[0])} (* const state_trigger[MAX_STATES+1])( void *);\n
 int main(int argc, char** argv) {\n
 SECTION2
 
@@ -209,7 +209,7 @@ SECTION3
    
 #     array_val.each{ |elem|
        functions+="\t\t\tcase #{key}:\n";
-       functions+="\t\t\t\tgo_to_state = (*state_trigger[go_to_state])((void *)sample_session);\n"
+       functions+="\t\t\t\tgo_to_state = (*state_trigger[go_to_state])( (void *)sample_session);\n"
        functions+="\t\t\t\tbreak;\n"
  #    };
 #     functions+="\n\t\t\t\tstrcpy(current_state,\"#{array_val.last}\");"
