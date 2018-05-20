@@ -3,7 +3,7 @@
 require 'psych'
 require 'yaml'
 
-FILE_GEN_DIR = "code_gen";
+#FILE_GEN_DIR = "code_gen";
 
 class StateNode
 
@@ -335,14 +335,15 @@ else
       states_arr<<elem.node_name;
     end
     begin
+      FILE_GEN_DIR = "#{ARGV[0].split(".")[0].concat("_GENERATED_CODE")}";
       unless Dir.exist?(File.join(Dir.pwd, FILE_GEN_DIR))
         Dir.mkdir(File.join(Dir.pwd, FILE_GEN_DIR), 0777);
       end
-      fsmc = File.new(File.join(Dir.pwd, FILE_GEN_DIR, "fsm.c"), "w");
+      fsmc = File.new(File.join(Dir.pwd, FILE_GEN_DIR, "#{ARGV[0].split(".")[0].concat(".c")}"), "w");
       fsmc.write(return_implementation_file_template(states_arr,states_hash).to_s);
       fsmc.flush();
       fsmc.close();    
-      fsmh = File.new(File.join(Dir.pwd, FILE_GEN_DIR, "fsm.h"), "w");
+      fsmh = File.new(File.join(Dir.pwd, FILE_GEN_DIR, "#{ARGV[0].split(".")[0].concat(".h")}"), "w");
       fsmh.write(return_header_file_template(states_arr));
       fsmh.flush();
       fsmh.close();
