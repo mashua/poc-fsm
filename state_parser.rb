@@ -30,8 +30,8 @@ def return_header_file_template(states_array)
  states="";
  functions="";
  header_file= <<SECTION1
-#ifndef FSM_H
-#define FSM_H
+#ifndef #{ARGV[0].split(".")[0].concat("_H").to_s.upcase}
+#define #{ARGV[0].split(".")[0].concat("_H").to_s.upcase}
 
 SECTION1
  
@@ -83,7 +83,7 @@ SECTION4
    functions+="/**\n * Function to trigger state #{elem}.\n * @return #{"theState_".concat(ARGV[0].split(".")[0])}\n */\n #{"theState_".concat(ARGV[0].split(".")[0])} trigger_#{elem}( void *);\n\n";
  }
  header_file+=functions;
- header_file+="#endif /*FSM_H*/"; 
+ header_file+="#endif /*#{ARGV[0].split(".")[0].concat("_H").to_s.upcase}*/"; 
  header_file;
 end
 
