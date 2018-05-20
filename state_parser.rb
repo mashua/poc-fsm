@@ -53,7 +53,7 @@ SECTION2
  
  header_file+= <<SECTION3
 \tLAST_STATE
-} theState;
+} #{"theState_".concat(ARGV[0].split(".")[0])};
 
 /*MAX_STATES includes the range [NO_STATE - IDLE_STATE] or [0-6]*/
 #define MAX_STATES LAST_STATE-1
@@ -67,14 +67,14 @@ SECTION3
 *
 * Function to handle a no valid transition.
 * Also used for zero padding the states array.
-* @return theState
+* @return #{"theState_".concat(ARGV[0].split(".")[0])}
 */
-theState no_tran(void);
+#{"theState_".concat(ARGV[0].split(".")[0])} no_tran(void *);
 
 SECTION4
 
  states_array.each{ |elem|
-   functions+="/**\n * Function to trigger state #{elem}.\n * @return theState\n */\n theState trigger_#{elem}(void);\n\n";
+   functions+="/**\n * Function to trigger state #{elem}.\n * @return #{"theState_".concat(ARGV[0].split(".")[0])}\n */\n #{"theState_".concat(ARGV[0].split(".")[0])} trigger_#{elem}(void *);\n\n";
  }
  header_file+=functions;
  header_file+="#endif /*FSM_H*/"; 
@@ -101,13 +101,13 @@ SECTION1
  * The zero indexed function is 'no_tran' and is used to have one to one
  * mapping between the trigger functions and the array indexes.
  */
-theState (* const state_trigger[MAX_STATES+1])(void) = {\n\tno_tran, /* no_tran function used for zero padding */
+#{"theState_".concat(ARGV[0].split(".")[0])} (* const state_trigger[MAX_STATES+1])(void *) = {\n\tno_tran, /* no_tran function used for zero padding */
 SECTION2
 
  #build the function pointers for the upper array
  states_array.each_index { |elem_index|
    states+="\ttrigger_"+"#{states_array[elem_index]}"
-   #don't put an extra ',' on the last array element, although that later C standards hava added support for it.
+   #don't put an extra ',' on the last array element, although that later C standards have added support for it.
    unless elem_index == states_array.length()-1
      states+=",";
    end
@@ -131,7 +131,7 @@ SECTION2
  implementation_file+=states;
  
  #build the no_tran function
- functions+= "\ntheState no_tran(void){\n\n";
+ functions+= "\n#{"theState_".concat(ARGV[0].split(".")[0])} no_tran(void *theSession){\n\n";
  functions+="\tchar *current_state = \"NO_TRAN_STATE\";\n";
  functions+="\tprintf(\"ACTION: %s, TRIGGERED\\n\", current_state);"; #escape the \n
  functions+="\n\t/*you have entered a non-valid state of the graph. Something weird has happened.*/";
@@ -141,14 +141,14 @@ SECTION2
  #build trigger_<> function bodies
  states_hash.each{ |key, array_val |
    if key.eql?(states_array.last) then #you are parsing the last state of your declared FSM
-     functions+= "\ntheState trigger_#{key}(void){\n\n";
+     functions+= "\n#{"theState_".concat(ARGV[0].split(".")[0])} trigger_#{key}(void *theSession){\n\n";
      functions+="\tchar *current_state = \"#{key}\";\n";
      functions+="\tprintf(\"STATE: %s, TRIGGERED\\n\", current_state);"; #escape the \n
      functions+="\n\t/*you have entered the last state of the graph.There is nowhere to go from here.*/";
      functions+="\n\texit(0);";
      functions+="\n}\n";     
    else
-     functions+= "\ntheState trigger_#{key}(void){\n\n";
+     functions+= "\n#{"theState_".concat(ARGV[0].split(".")[0])} trigger_#{key}(void *theSession){\n\n";
 #     functions+="\tchar *current_state = \"#{key}\";\n";
      functions+="\tchar *current_state = (char*)malloc(sizeof(char)*#{key.length});\n";
      functions+="\tstrcpy(current_state, \"#{key}\");\n";
@@ -190,7 +190,7 @@ SECTION1
  * The template code enters the first state as configured by your .yml file, 
  * and calls the relevant trigger_ function.
  */
-extern theState (* const state_trigger[MAX_STATES+1])(void);\n
+extern #{"theState_".concat(ARGV[0].split(".")[0])} (* const state_trigger[MAX_STATES+1])(void *);\n
 int main(int argc, char** argv) {\n
 SECTION2
 
@@ -198,6 +198,7 @@ SECTION2
 
  sample_main_code+= <<SECTION3
 \tuint8_t go_to_state = #{states_array[0]};\n
+\tuint8_t sample_session = 0;\n
 \twhile(1)\n\t{
 \t\tswitch(go_to_state)
 \t\t{
@@ -208,7 +209,7 @@ SECTION3
    
 #     array_val.each{ |elem|
        functions+="\t\t\tcase #{key}:\n";
-       functions+="\t\t\t\tgo_to_state = (*state_trigger[go_to_state])();\n"
+       functions+="\t\t\t\tgo_to_state = (*state_trigger[go_to_state])((void *)sample_session);\n"
        functions+="\t\t\t\tbreak;\n"
  #    };
 #     functions+="\n\t\t\t\tstrcpy(current_state,\"#{array_val.last}\");"
