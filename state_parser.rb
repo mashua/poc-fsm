@@ -92,7 +92,7 @@ def return_implementation_file_template(states_array, states_hash)
 #include <stdio.h>
 #include <string.h>
 
-#include "fsm.h"
+#include "#{ARGV[0].split(".")[0].concat(".h")}"
 
 SECTION1
  
@@ -181,7 +181,7 @@ def return_sample_main_file_template(states_array, states_hash)
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "fsm.h"
+#include "#{ARGV[0].split(".")[0].concat(".h")}"
 
 SECTION1
  
@@ -352,7 +352,7 @@ else
       samplemainc.flush();
       samplemainc.close();
       printf("Finish examining states and generating code.\n");
-      printf("Check 'code_gen' directory for the generated code.\n");      
+      printf("Check #{ARGV[0].split(".")[0].concat("_GENERATED_CODE")} directory for the generated code.\n");      
     rescue Exception => ex
       puts ex;
       raise();
