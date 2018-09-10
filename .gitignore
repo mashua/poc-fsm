@@ -4,3 +4,4 @@
 *.gz
 /code_gen/*
 /poc-fsm/*
+poc-fsm_GENERATED_CODE/*
