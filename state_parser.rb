@@ -3,6 +3,8 @@
 require 'psych'
 require 'yaml'
 
+require 'pry'
+
 #FILE_GEN_DIR = "code_gen";
 
 class StateNode
@@ -277,7 +279,8 @@ end
 #starting nodes and each key value is an array of the visiting nodes.
 def parse_gv_file()
 
-  reg = /\(([^()]+)\)/;#regex to match the \path lines to extract the nodes info.
+  #regex to match the start_node -> end_node
+  reg = /(?<start_node>\S+)(?<whitespace1>\s?)(?<arrow>\S+)(?<whitespace2>\s?)(?<end_node>\S+\s*\[\s*)/;
   t = File.open("".concat(ARGV[0].to_s),"r");
   graph_hash = Hash.new();
   
@@ -285,28 +288,27 @@ def parse_gv_file()
 #    if line_text[0].eql?("%") then #this line is commented alltogether
 #      next;
 #    end
-    if(line_text.to_s.match(/.*?(path)/) != nil) then
+    if(line_text.to_s.match(/.*?->/) != nil) then
       #i'm on a text line that contains \path tikz tex code.
      #match data is in form [["node1"],["node2"]]
      match_data = line_text.scan(reg);
-   if match_data.length == 1 then #this line is commented for a future \path with origing node but not destination
-     next;
-   end
-     if( graph_hash.key?(match_data[0][0])) then
-       #node as a key exists
-       temp = graph_hash[match_data[0][0]];
-       temp << match_data[1][0];
-       graph_hash.store(match_data[0][0], temp);
-     elsif
-       #key does not exist       
-       graph_hash.store(match_data[0][0], Array.new());
-       unless match_data[0][0].to_s.eql?(match_data[1][0]) #the same state name in source and destination.
-         graph_hash.store(match_data[0][0], graph_hash[match_data[0][0]] << match_data[1][0] );
-       end
-     end
-   end
+      
+      if( graph_hash.key?(match_data[0][0])) then
+        #node as a key exists
+        temp = graph_hash[match_data[0][0]];
+        temp << match_data[0][4].slice(0, match_data[0][4].index('['));
+        graph_hash.store(match_data[0][0], temp);
+      elsif
+        #key does not exist       
+        graph_hash.store(match_data[0][0], Array.new());
+        unless match_data[0][0].to_s.eql?( match_data[0][4].slice(0, match_data[0][4].index('['))) #the same state name in source and destination.
+          graph_hash.store(match_data[0][0], graph_hash[match_data[0][0]] << match_data[0][4].slice(0, match_data[0][4].index('[')));
+        end
+      end
+    end
   }
   graph_hash;
+  
 end
  
 #Accepts the graph represented in a hash an
