@@ -271,6 +271,44 @@ def parse_tex_file()
  graph_hash;
 end
 
+#Parses .gv file containing the graph representation.
+#Matches (<node_names>) in lines containing "->" text lines
+#Returns the a hash of the graph, where the hash keys are the
+#starting nodes and each key value is an array of the visiting nodes.
+def parse_gv_file()
+
+  reg = /\(([^()]+)\)/;#regex to match the \path lines to extract the nodes info.
+  t = File.open("".concat(ARGV[0].to_s),"r");
+  graph_hash = Hash.new();
+  
+  t.each_line{ |line_text|
+#    if line_text[0].eql?("%") then #this line is commented alltogether
+#      next;
+#    end
+    if(line_text.to_s.match(/.*?(path)/) != nil) then
+      #i'm on a text line that contains \path tikz tex code.
+     #match data is in form [["node1"],["node2"]]
+     match_data = line_text.scan(reg);
+   if match_data.length == 1 then #this line is commented for a future \path with origing node but not destination
+     next;
+   end
+     if( graph_hash.key?(match_data[0][0])) then
+       #node as a key exists
+       temp = graph_hash[match_data[0][0]];
+       temp << match_data[1][0];
+       graph_hash.store(match_data[0][0], temp);
+     elsif
+       #key does not exist       
+       graph_hash.store(match_data[0][0], Array.new());
+       unless match_data[0][0].to_s.eql?(match_data[1][0]) #the same state name in source and destination.
+         graph_hash.store(match_data[0][0], graph_hash[match_data[0][0]] << match_data[1][0] );
+       end
+     end
+   end
+  }
+  graph_hash;
+end
+ 
 #Accepts the graph represented in a hash an
 #converts it to a .yml file.
 def create_yaml_repr(the_graph_hash)
@@ -299,9 +337,11 @@ end
 
 if ARGV.length() == 0 then
   printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
-  printf("\nMissing .tex or .yml file to parse state graph info.\n");
+  printf("\nMissing .tex, .gv or .yml file to parse state graph info.\n");
   printf("Usage is like:\n");
   printf("\t'ruby state_parser.rb' <states_file.tex>\n");
+  printf("or:\n");
+  printf("\t'ruby state_parser.rb' <states_file.gv>\n");
   printf("or:\n");
   printf("\t'ruby state_parser.rb' <states_file.yml>\n");
   printf("~exited(-1):\n");
@@ -310,8 +350,12 @@ else
 #  printf("Using file:#{ARGV[0]} to parse the state graph and produce the .yml .c and .h files.\n");
 #  printf("Files will be generated at #{Dir.pwd.concat("/").concat(FILE_GEN_DIR)} directory\n");
   if ARGV[0].to_s.match(/\.tex/) != nil then
-  #
+    #handle .tex files with graph info
     graph = parse_tex_file();
+    if graph.empty? then
+      printf("no valid graph detected on file, exiting\n");
+      exit(-1);
+    end
     create_yaml_repr(graph);
     printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 #    p ARGV[0].split(".")
@@ -319,7 +363,7 @@ else
     printf("~exited(0):\n");
     exit(0);
   elsif ARGV[0].to_s.match(/\.yml/) != nil
-  #
+    #handle .yml files with graph info
     begin
       temp_graph = YAML::load_file(ARGV[0]);
     rescue Psych::SyntaxError
@@ -365,9 +409,22 @@ else
       raise();
     ensure
       #nothing
-    end   
+    end
+  elsif ARGV[0].to_s.match(/\.gv/) != nil
+    #handle .gv files with graph info
+    graph = parse_gv_file();
+    if graph.empty? then
+      printf("no valid graph detected on file, exiting\n");
+      exit(-1);
+    end
+    create_yaml_repr(graph);
+    printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
+    #    p ARGV[0].split(".")
+    printf("\n#{ARGV[0].split(".")[0].concat(".yml")} file generated, inspect it as nesessary, or now run \n'ruby state_parser.rb #{ARGV[0].split(".")[0].concat(".yml")}' to generate the driving code for your FSM.\n");
+    printf("~exited(0):\n");
+    exit(0);
   else
-    raise Exception.new("Out of this world error");
+    raise Exception.new("Error, file format not supported\n");
     exit(-1);
   end
   #bye!
