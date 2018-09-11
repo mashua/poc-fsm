@@ -8,8 +8,8 @@
 - !ruby/object:StateNode
   node_name: state2
   nodes_to_go:
-  - state3
   - state4
+  - state3
 - !ruby/object:StateNode
   node_name: state3
   nodes_to_go:
@@ -17,4 +17,5 @@
   - state4
 - !ruby/object:StateNode
   node_name: state4
-  nodes_to_go: []
+  nodes_to_go:
+  - state1

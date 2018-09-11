@@ -1,0 +1,23 @@
+digraph example_fsm {
+subgraph cluster0 {
+	 node [style=filled,color=white];
+	 style=filled;
+	 color=lightgrey;
+	 state1 -> state2[label="event22"]
+	 state1 -> state3[label="event23"]
+	 state2 -> state4[label="event24"]
+	 state3 -> state1[label="event21"]
+	 label = "subgraph0";
+	
+}
+
+subgraph cluster1 {
+	 node [style=filled];
+	 state1 -> state4[label="event24"]
+	 state2 -> state3[label="event23"]
+	 state3 -> state4[label="event24"]
+	 state4 -> state1[label="event21"]
+	 color=blue;
+	 label = "subgraph1"
+}
+}
