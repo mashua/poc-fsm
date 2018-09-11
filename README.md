@@ -1,6 +1,8 @@
 #poc-fsm
 
-A proof-of-concept Finite State Machine (FSM) implementation in ansi C and a code generation utility to construct the relevant .c and .h files needed to drive the described FSM.
+##proof-of-concept finite state machine
+
+A Finite State Machine (FSM) implementation in ANSI C and a code generation utility to construct the relevant .c and .h files needed to drive the described FSM.
 
 The representation of the states and the transitions between them is represented in a .gv, .tex or .yml file for easy modification of your FSM.
 
@@ -14,7 +16,7 @@ This will generate a postscript file that you can display with any modern docume
 
 **(read the <u>'Future Work may be'</u> section number 2, for very important info about the last/final state of your FSM)**
 
-For the shipped example FSM see one of the attached .gv, .tex, .yml file.
+For the shipped example FSM see one of the attached .gv, .tex or .yml files.
 
 The sample FSM has four states. The initial state is 'state1' and the transitions are as follows:
 
@@ -31,9 +33,17 @@ A visual representation is the following:
 
 <u>**Currently Supported Features:**</u>
 
- 1. Representation of the FSM in a yaml file (see shipped example poc-fsm.yml file).
- 2. Parsing the .yml file and generation of one .h and one .c file. The .h file contains the definitions to be used, such as prototype functions, and a custom defined type for the states representation. The .c file contains skeleton code to implement your FSM transitioning logic. One function per defined state is generated with some facilities as: logging of current triggered state and resulting state, a comment statement containig all possible next transitions that where declared valid from the specific state and they where described at the .yml file. The generated skeleton functions are named trigger_<STATE_NAME\>, e.g, trigger_STATE6( );
- 3. The generated files are stored on the 'code_gen' subfolder, relativelly from where the 'state_parser.rb' script is executed. You can change it by approprietally setting the ''FILE_GEN_DIR'' variable at the script's source.
+ 1. Representation of the FSM in a .gv, .tex or .yml file.
+ 2. Parsing of the .gv, .tex files and generation of a .yml file.
+ 3. Parsing of the .yml file and generation of .h and one .c files.
+
+The .h file contains the definitions to be used, such as prototype functions, and a custom defined type for the states representation. 
+
+The .c file contains skeleton code to implement your FSM transitioning logic. One function per defined state is generated with some facilities as: logging of current triggered state and resulting state, a comment statement containig all possible next transitions that where declared valid from the specific state. 
+
+The generated skeleton functions are named trigger_<STATE_NAME\>, e.g, trigger_STATE6( );
+
+The generated files are stored on the 'code_gen' subfolder, relativelly from where the 'state_parser.rb' script is executed. You can change it by approprietally setting the ''FILE_GEN_DIR'' variable at the script's source.
 
 <u>**Future work may be:**</u>
 
@@ -41,10 +51,9 @@ A visual representation is the following:
 
 2. Find a better solution for the above (2.)
 
-3. A states validity table. The rows holds the 'From' state and column holds the 'To' state. The library user should be able to call stateValidity[2][1] == 1 to check if the transition from 'state2' to 'state1' is a valid one. Be aware that the array might have stateValidity[2][1] == 1 and stateValidity[1][2] == 0 or stateValidity[2][2] == 1, all of which represents perfectly valid transitions for a FSM. Zero padding for the array should be optional and enabled by default to avoid confusion to the programmer
-[1] To properly open, view and edit .dia files, you need the [Dia](http://live.gnome.org/Dia) program.
+3. A states validity table. The rows holds the 'From' state and column holds the 'To' state. The library user should be able to call stateValidity[2][1] == 1 to check if the transition from 'state2' to 'state1' is a valid one. Be aware that the array might have stateValidity[2][1] == 1 and stateValidity[1][2] == 0 or stateValidity[2][2] == 1, all of which represents perfectly valid transitions for a FSM. 
 
-[2] To properly compile the .tex file into a .pdf you must have the 'pdflatex' command availiable and also the TikZ/pgf library.
+Zero padding for the array should be optional and enabled by default to avoid confusion to the programmer.
 
 <u>**Shipped examples:**</u>
 
@@ -53,8 +62,6 @@ The examples shiped with the project descibes a very simple FSM. Descriptions ar
   * graphviz .gv file
   * Tex .tex file
   * Dia software .dia file (non-parsable)
-
-
 
 <u>**Script usage and produced output**</u>
 
@@ -81,3 +88,8 @@ You can complile the files using the following command:
 and test the graph by running the a.out executable.
 
 
+**Notes**
+
+To properly compile the .tex file into a .pdf you must have the 'pdflatex' command availiable and also the TikZ/pgf library.
+
+To properly visualize the .gv file into a .ps file, you must have the 'dot' command availiable.
