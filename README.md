@@ -34,12 +34,12 @@ A visual representation is the following:
 <u>**Currently Supported Features:**</u>
 
  1. Representation of the FSM in a .gv, .tex or .yml file.
- 2. Parsing of the .gv, .tex files and generation of a .yml file.
- 3. Parsing of the .yml file and generation of .h and one .c files.
+ 2. Parsing of the .gv, .tex files and generation of a .yml file (this is not needed if you describe your graph directly at the.yml file).
+ 3. Parsing of the .yml file and generation of one .h and one .c file.
 
-The .h file contains the definitions to be used, such as prototype functions, and a custom defined type for the states representation. 
+The .h file contains the definitions to be used, such as prototype functions, and a custom defined type for the states representation.
 
-The .c file contains skeleton code to implement your FSM transitioning logic. One function per defined state is generated with some facilities as: logging of current triggered state and resulting state, a comment statement containig all possible next transitions that where declared valid from the specific state. 
+The .c file contains skeleton code to implement your FSM transitioning logic. One function per defined state is generated with some facilities as: logging of current triggered state and resulting state, a comment statement containig all possible next transitions that where declared valid from the specific state.
 
 The generated skeleton functions are named trigger_<STATE_NAME\>, e.g, trigger_STATE6( );
 
@@ -51,17 +51,21 @@ The generated files are stored on the 'code_gen' subfolder, relativelly from whe
 
 2. Find a better solution for the above (2.)
 
-3. A states validity table. The rows holds the 'From' state and column holds the 'To' state. The library user should be able to call stateValidity[2][1] == 1 to check if the transition from 'state2' to 'state1' is a valid one. Be aware that the array might have stateValidity[2][1] == 1 and stateValidity[1][2] == 0 or stateValidity[2][2] == 1, all of which represents perfectly valid transitions for a FSM. 
+3. A states validity table. The rows holds the 'From' state and column holds the 'To' state. The library user should be able to call stateValidity[2][1] == 1 to check if the transition from 'state2' to 'state1' is a valid one. Be aware that the array might have stateValidity[2][1] == 1 and stateValidity[1][2] == 0 or stateValidity[2][2] == 1, all of which represents perfectly valid transitions for a FSM.
 
-Zero padding for the array should be optional and enabled by default to avoid confusion to the programmer.
+4. Zero padding for the array should be optional and enabled by default to avoid confusion to the programmer.
 
-<u>**Shipped examples:**</u>
+5. Add more ways to describe the FSM, eg: json file.
 
-The examples shiped with the project descibes a very simple FSM. Descriptions are provided at:
+6. Change the templating engine used to write down the .h and .c files. Currently we use [HERE documents](http://ruby-doc.org/docs/ruby-doc-bundle/Manual/man-1.4/syntax.html#here_doc)
+
+<u>**Shipped example:**</u>
+
+The example shiped with the project descibes a very simple FSM. Descriptions are provided in the following formats:
 
   * graphviz .gv file
   * Tex .tex file
-  * Dia software .dia file (non-parsable)
+  * YAML .yml file
 
 <u>**Script usage and produced output**</u>
 
